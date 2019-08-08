@@ -1,0 +1,67 @@
+version: '3.7'
+services:
+    nginx:
+        image: nginx:latest
+        ports:
+            - target: 80
+              published: 80
+              protocol: tcp
+        volumes:
+            - type: bind
+              source: ./nginx/nginx.conf
+              target: /etc/nginx/nginx.conf
+        depends_on:
+            - client
+            - producer
+    client:
+        image: patelkarishma10/account-manager-client:latest
+        build:
+            context: ./AccountFrontEnd
+        ports:
+            - target: 3000
+              published: 3000
+              protocol: tcp 
+    producer:
+        image: patelkarishma10/account-manager-producer:latest
+        build:
+            context: ./AccountManagerSpringBoot
+        ports:
+            - target: 8080
+              published: 8080
+              protocol: tcp     
+    consumer:
+        image: patelkarishma10/account-manager-consumer:latest
+        build:
+            context: ./AccountManagerConsumer
+        ports:
+            - target: 8087
+              published: 8087
+              protocol: tcp
+    activemq:
+        image: webcenter/activemq
+        ports:
+            - target: 61616
+              published: 61616
+              protocol: tcp
+    prizegen:
+        image: patelkarishma10/account-manager-prizegen:latest
+        build:
+            context: ./AccountSpringPrizeGen
+        ports:
+            - target: 8088
+              published: 8088
+              protocol: tcp
+    numgen:
+        image: patelkarishma10/account-manager-numgen:latest
+        build:
+            context: ./AccountSpringNumGen
+        ports:
+            - target: 8089
+              published: 8089
+              protocol: tcp
+    mongodb:
+        image: mongo:latest
+        ports:
+            - target: 27017
+              published: 27017
+              protocol: tcp
